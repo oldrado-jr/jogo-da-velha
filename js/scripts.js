@@ -2,8 +2,6 @@ const x = document.querySelector('.x');
 const o = document.querySelector('.o');
 const boxes = document.querySelectorAll('.box');
 const buttons = document.querySelectorAll('#buttons-container button');
-const messageContainer = document.querySelector('#message');
-const messageText = document.querySelector('#message p');
 
 // Contador de jogadas
 let player1 = 0;
@@ -31,12 +29,14 @@ boxes.forEach(box => {
 
         const plays = player1 + player2;
 
-        if (plays < 5) {
+        if (plays < 5 || checkWinCondition()) {
             return;
         }
 
-        if (9 === plays && !checkWinCondition()) {
-            console.log('Deu velha!');
+        if (9 === plays) {
+            appendMessage('Deu velha!');
+            resetPlayerCount();
+            clearTable();
         }
     });
 });
@@ -84,7 +84,6 @@ function checkHorizontally() {
         }
 
         if (isLineEqual(line)) {
-            console.log(`${getWinnerElement(line)} venceu`);
             return true;
         }
 
@@ -104,7 +103,6 @@ function checkVertically() {
         }
 
         if (isLineEqual(line)) {
-            console.log(`${getWinnerElement(line)} venceu`);
             return true;
         }
     }
@@ -121,7 +119,6 @@ function checkDiagonally() {
     }
 
     if (isLineEqual(diagonal)) {
-        console.log(`${getWinnerElement(diagonal)} venceu`);
         return true;
     }
 
@@ -132,7 +129,6 @@ function checkDiagonally() {
     }
 
     if (isLineEqual(diagonal)) {
-        console.log(`${getWinnerElement(diagonal)} venceu`);
         return true;
     }
 
@@ -148,6 +144,9 @@ function isLineEqual(line) {
         && pos0.childNodes[0].className == pos1.childNodes[0].className
         && pos1.childNodes[0].className == pos2.childNodes[0].className
     ) {
+        declareWinner(pos0.childNodes[0].className);
+        resetPlayerCount();
+        clearTable();
         return true;
     }
 
@@ -157,4 +156,53 @@ function isLineEqual(line) {
 // Obtém o elemento vencedor
 function getWinnerElement(line) {
     return line[0].childNodes[0].className;
+}
+
+function declareWinner(winner) {
+    const scoreboardX = document.querySelector('#scoreboard-1');
+    const scoreboardO = document.querySelector('#scoreboard-2');
+    let message = '';
+
+    switch (winner) {
+        case x.className:
+            scoreboardX.textContent = parseInt(scoreboardX.textContent) + 1;
+            message = 'Jogador 1 venceu';
+            break;
+        case o.className:
+            scoreboardO.textContent = parseInt(scoreboardO.textContent) + 1;
+            message = 'Jogador 2 venceu';
+            break;
+    }
+
+    appendMessage(message);
+}
+
+
+function appendMessage(message) {
+    const messageContainer = document.querySelector('#message');
+    const messageText = document.querySelector('#message p');
+
+    // Exibe mensagem
+    messageText.textContent = message;
+    messageContainer.classList.remove('hide');
+
+    // Esconde mensagem
+    setTimeout(() => {
+        messageContainer.classList.add('hide');
+    }, 3000)
+}
+
+// Zera as jogadas
+function resetPlayerCount() {
+    player1 = 0;
+    player2 = 0;
+}
+
+// Limpa o tabuleiro
+function clearTable() {
+    const boxesToRemove = document.querySelectorAll('.box div');
+
+    boxesToRemove.forEach((box) => {
+        box.parentNode.removeChild(box);
+    });
 }
