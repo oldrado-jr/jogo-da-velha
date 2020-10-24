@@ -3,6 +3,24 @@ const o = document.querySelector('.o');
 const boxes = document.querySelectorAll('.box');
 const buttons = document.querySelectorAll('#buttons-container button');
 
+let secondPlayer;
+
+buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+        secondPlayer = button.getAttribute('id');
+
+        for (let i = 0; i < buttons.length; i++) {
+            const element = buttons[i];
+            element.style.display = 'none';
+        }
+
+        setTimeout(() => {
+            const container = document.querySelector('#container');
+            container.classList.remove('hide');
+        }, 500);
+    });
+});
+
 // Contador de jogadas
 let player1 = 0;
 let player2 = 0;
@@ -23,6 +41,11 @@ boxes.forEach(box => {
         // Computar jogada
         if (player1 == player2) {
             player1++;
+
+            if ('ai-player' == secondPlayer) {
+                computerPlay();
+                player2++;
+            }
         } else {
             player2++;
         }
@@ -205,4 +228,26 @@ function clearTable() {
     boxesToRemove.forEach((box) => {
         box.parentNode.removeChild(box);
     });
+}
+
+function computerPlay() {
+    const cloneO = o.cloneNode(true);
+    let counter = 0; // Quantidade de jogadas
+    let filled = 0; // Quantidade de campos preenchidos
+
+    boxes.forEach(box => {
+        const randomNumber = Math.floor(Math.random() * 5);
+
+        if (box.childNodes[0]) {
+            filled++;
+        } else if (randomNumber <= 1) {
+            box.appendChild(cloneO);
+            counter++;
+            return;
+        }
+    });
+
+    if (0 === counter && filled < 9) {
+        computerPlay();
+    }
 }
