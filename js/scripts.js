@@ -52,11 +52,11 @@ boxes.forEach(box => {
 
         const plays = player1 + player2;
 
-        if (plays < 5 || checkWinCondition()) {
+        if (plays < Math.ceil(boxes.length / 2) || checkWinCondition()) {
             return;
         }
 
-        if (9 === plays) {
+        if (boxes.length === plays) {
             appendMessage('Deu velha!');
             resetPlayerCount();
             clearTable();
